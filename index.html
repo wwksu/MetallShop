@@ -2375,6 +2375,23 @@ function setupModal() {
         orderBtn.addEventListener('click', function() {
             const titleEl = document.getElementById('modalTitle');
             const productName = titleEl ? titleEl.textContent : '';
+            // Создаём заказ как запись в contacts
+            try {
+                const contacts = JSON.parse(localStorage.getItem('contacts')) || [];
+                contacts.push({
+                    name: currentUser ? currentUser.name : 'Гость',
+                    phone: currentUser ? (currentUser.phone || '—') : '—',
+                    message: `Заказ: ${productName}`,
+                    date: new Date().toISOString()
+                });
+                localStorage.setItem('contacts', JSON.stringify(contacts));
+                scheduleAutoSync();
+                if (typeof loadOrders === 'function') {
+                    loadOrders();
+                }
+            } catch (e) {
+                console.error('Ошибка создания заказа', e);
+            }
             showNotification(`Заказ на "${productName}" отправлен!`, 'success');
             closeModal();
         });
