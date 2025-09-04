@@ -2252,11 +2252,16 @@ function setupContactForm() {
 // Модальное окно
 function setupModal() {
     const modal = document.getElementById('productModal');
-    const closeBtn = document.querySelector('.close');
+    if (!modal) {
+        return;
+    }
+    const closeBtn = modal.querySelector('.close');
     const orderBtn = document.getElementById('orderBtn');
     
     // Закрытие модального окна
-    closeBtn.addEventListener('click', closeModal);
+    if (closeBtn) {
+        closeBtn.addEventListener('click', closeModal);
+    }
     window.addEventListener('click', function(e) {
         if (e.target === modal) {
             closeModal();
@@ -2264,11 +2269,14 @@ function setupModal() {
     });
     
     // Кнопка заказа
-    orderBtn.addEventListener('click', function() {
-        const productName = document.getElementById('modalTitle').textContent;
-        showNotification(`Заказ на "${productName}" отправлен!`, 'success');
-        closeModal();
-    });
+    if (orderBtn) {
+        orderBtn.addEventListener('click', function() {
+            const titleEl = document.getElementById('modalTitle');
+            const productName = titleEl ? titleEl.textContent : '';
+            showNotification(`Заказ на "${productName}" отправлен!`, 'success');
+            closeModal();
+        });
+    }
 }
 
 function openModal(product) {
@@ -3731,25 +3739,31 @@ function deleteUser(userId) {
 document.addEventListener('DOMContentLoaded', function() {
     // Закрытие модального окна редактирования товара
     const editModal = document.getElementById('editProductModal');
-    const editCloseBtn = editModal.querySelector('.close');
-    
-    editCloseBtn.addEventListener('click', closeEditModal);
-    window.addEventListener('click', function(e) {
-        if (e.target === editModal) {
-            closeEditModal();
+    if (editModal) {
+        const editCloseBtn = editModal.querySelector('.close');
+        if (editCloseBtn) {
+            editCloseBtn.addEventListener('click', closeEditModal);
         }
-    });
+        window.addEventListener('click', function(e) {
+            if (e.target === editModal) {
+                closeEditModal();
+            }
+        });
+    }
     
     // Закрытие модального окна управления изображениями
     const imageManagerModal = document.getElementById('imageManagerModal');
-    const imageManagerCloseBtn = imageManagerModal.querySelector('.close');
-    
-    imageManagerCloseBtn.addEventListener('click', closeImageManager);
-    window.addEventListener('click', function(e) {
-        if (e.target === imageManagerModal) {
-            closeImageManager();
+    if (imageManagerModal) {
+        const imageManagerCloseBtn = imageManagerModal.querySelector('.close');
+        if (imageManagerCloseBtn) {
+            imageManagerCloseBtn.addEventListener('click', closeImageManager);
         }
-    });
+        window.addEventListener('click', function(e) {
+            if (e.target === imageManagerModal) {
+                closeImageManager();
+            }
+        });
+    }
     
     // Предварительный просмотр изображений при редактировании
     const editImageInput = document.getElementById('editProductImages');
