@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Мастер по металлу - Двери, заборы, кованые изделия</title>
+    <link rel="stylesheet" href="css.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <!-- Навигация -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <i class="fas fa-hammer"></i>
+                <span>МеталлМастер</span>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="#home" class="nav-link">Главная</a></li>
+                <li><a href="#products" class="nav-link">Каталог</a></li>
+                <li id="addProductLink" style="display: none;"><a href="#add-product" class="nav-link">Добавить товар</a></li>
+                <li id="adminPanelLink" style="display: none;"><a href="#admin-panel" class="nav-link">Админ-панель</a></li>
+                <li><a href="#contact" class="nav-link">Контакты</a></li>
+                <li id="profileLink" style="display: none;"><a href="#profile" class="nav-link">Профиль</a></li>
+                <li id="loginLink"><a href="#login" class="nav-link">Войти</a></li>
+                <li id="logoutLink" style="display: none;"><a href="#" class="nav-link" onclick="logout()">Выйти</a></li>
+                <li><button id="themeToggle" class="theme-toggle" onclick="toggleTheme()" title="Переключить тему">
+                    <i class="fas fa-moon"></i>
+                </button></li>
+            </ul>
+            <div class="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Главная секция -->
+    <section id="home" class="hero">
+        <div class="hero-content">
+            <h1 class="hero-title">Мастер по металлу</h1>
+            <p class="hero-subtitle">Качественные двери, заборы и кованые изделия на заказ</p>
+            <div class="hero-buttons">
+                <a href="#products" class="btn btn-primary">Посмотреть работы</a>
+                <a href="#contact" class="btn btn-secondary">Связаться с нами</a>
+            </div>
+        </div>
+        <div class="hero-animation">
+            <div class="spark spark-1"></div>
+            <div class="spark spark-2"></div>
+            <div class="spark spark-3"></div>
+        </div>
+    </section>
+
+    <!-- Каталог товаров -->
+    <section id="products" class="products">
+        <div class="container">
+            <h2 class="section-title">Наши работы</h2>
+            <div class="products-filter">
+                <button class="filter-btn active" data-filter="all">Все</button>
+                <button class="filter-btn" data-filter="doors">Двери</button>
+                <button class="filter-btn" data-filter="fences">Заборы</button>
+                <button class="filter-btn" data-filter="forged">Ковка</button>
+            </div>
+            <div class="products-grid" id="productsGrid">
+                <!-- Товары будут добавляться динамически -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Авторизация -->
+    <section id="login" class="login-section">
+        <div class="container">
+            <div class="auth-container">
+                <div class="auth-tabs">
+                    <button class="tab-btn active" data-tab="login">Вход</button>
+                    <button class="tab-btn" data-tab="register">Регистрация</button>
+                </div>
+                
+                <!-- Форма входа -->
+                <form class="auth-form active" id="loginForm">
+                    <h2>Вход в систему</h2>
+                    <div class="form-group">
+                        <label for="loginEmail">Email</label>
+                        <input type="email" id="loginEmail" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="loginPassword">Пароль</label>
+                        <input type="password" id="loginPassword" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Войти</button>
+                </form>
+                
+                <!-- Форма регистрации -->
+                <form class="auth-form" id="registerForm">
+                    <h2>Регистрация</h2>
+                    <div class="form-group">
+                        <label for="regName">Имя</label>
+                        <input type="text" id="regName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="regEmail">Email</label>
+                        <input type="email" id="regEmail" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="regPassword">Пароль</label>
+                        <input type="password" id="regPassword" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Зарегистрироваться</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Профиль пользователя -->
+    <section id="profile" class="profile-section">
+        <div class="container">
+            <h2 class="section-title">Мой профиль</h2>
+            <div class="profile-content">
+                <div class="profile-info">
+                    <div class="profile-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="profile-details">
+                        <h3 id="profileName"></h3>
+                        <p id="profileEmail"></p>
+                        <p id="profilePhone"></p>
+                        <span class="profile-role" id="profileRole"></span>
+                    </div>
+                </div>
+                <div class="profile-actions">
+                    <button class="btn btn-secondary" onclick="editProfile()">Редактировать профиль</button>
+                    <button class="btn btn-primary" onclick="showMyOrders()">Мои заказы</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Админ-панель -->
+    <section id="admin-panel" class="admin-panel">
+        <div class="container">
+            <h2 class="section-title">Админ-панель</h2>
+            <div class="admin-tabs">
+                <button class="admin-tab-btn active" data-tab="products">Управление товарами</button>
+                <button class="admin-tab-btn" data-tab="orders">Заказы</button>
+                <button class="admin-tab-btn" data-tab="users">Пользователи</button>
+                <button class="admin-tab-btn" data-tab="settings">Настройки</button>
+            </div>
+            
+            <!-- Управление товарами -->
+            <div class="admin-content active" id="products-tab">
+                <div class="admin-header">
+                    <h3>Управление товарами</h3>
+                    <div class="admin-actions">
+                        <button class="btn btn-primary" onclick="showAddProductForm()">Добавить товар</button>
+                        <button class="btn btn-success" onclick="syncDataToServer()">Синхронизировать с сервером</button>
+                        <button class="btn btn-danger" onclick="clearAllProducts()">Очистить все товары</button>
+                        <button class="btn btn-warning" onclick="removeDefaultProducts()">Удалить товары по умолчанию</button>
+                        <button class="btn btn-secondary" onclick="showStorageInfo()">Информация о хранилище</button>
+                        <button class="btn btn-warning" onclick="clearLocalStorage()">Очистить хранилище</button>
+                    </div>
+                </div>
+                <div class="products-admin-grid" id="adminProductsGrid">
+                    <!-- Товары будут загружаться динамически -->
+                </div>
+            </div>
+            
+            <!-- Заказы -->
+            <div class="admin-content" id="orders-tab">
+                <h3>Заказы клиентов</h3>
+                <div class="orders-list" id="ordersList">
+                    <!-- Заказы будут загружаться динамически -->
+                </div>
+            </div>
+            
+            <!-- Пользователи -->
+            <div class="admin-content" id="users-tab">
+                <h3>Управление пользователями</h3>
+                <div class="users-list" id="usersList">
+                    <!-- Пользователи будут загружаться динамически -->
+                </div>
+            </div>
+            
+            <!-- Настройки -->
+            <div class="admin-content" id="settings-tab">
+                <h3>Настройки сайта</h3>
+                <form class="settings-form" id="settingsForm">
+                    <div class="form-group">
+                        <label for="siteName">Название сайта</label>
+                        <input type="text" id="siteName" value="МеталлМастер">
+                    </div>
+                    <div class="form-group">
+                        <label for="siteDescription">Описание сайта</label>
+                        <textarea id="siteDescription" rows="3">Качественные двери, заборы и кованые изделия на заказ</textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="contactPhone">Контактный телефон</label>
+                        <input type="tel" id="contactPhone" value="+7 (XXX) XXX-XX-XX">
+                    </div>
+                    <div class="form-group">
+                        <label for="contactEmail">Контактный email</label>
+                        <input type="email" id="contactEmail" value="master@metall.ru">
+                    </div>
+                    <div class="form-group">
+                        <label for="contactAddress">Адрес</label>
+                        <input type="text" id="contactAddress" value="г. Ваш город, ул. Мастерская, д. 1">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Сохранить настройки</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Форма добавления товара -->
+    <section id="add-product" class="add-product">
+        <div class="container">
+            <h2 class="section-title">Добавить новый товар</h2>
+            <form class="product-form" id="productForm">
+                <div class="form-group">
+                    <label for="productName">Название товара</label>
+                    <input type="text" id="productName" name="name" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="productCategory">Категория</label>
+                    <select id="productCategory" name="category" required>
+                        <option value="">Выберите категорию</option>
+                        <option value="doors">Двери</option>
+                        <option value="fences">Заборы</option>
+                        <option value="forged">Ковка</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="productPrice">Цена (руб.)</label>
+                    <input type="number" id="productPrice" name="price" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="productDescription">Описание</label>
+                    <textarea id="productDescription" name="description" rows="4" required></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="productImages">Фотографии</label>
+                    <input type="file" id="productImages" name="images" multiple accept="image/*">
+                    <div class="image-preview" id="imagePreview"></div>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Добавить товар</button>
+                    <button type="button" class="btn btn-secondary" onclick="cancelAddProduct()">Отмена</button>
+                </div>
+            </form>
+        </div>
+    </section>
+
+    <!-- Контакты -->
+    <section id="contact" class="contact">
+        <div class="container">
+            <h2 class="section-title">Контакты</h2>
+            <div class="contact-content">
+                <div class="contact-info">
+                    <div class="contact-item">
+                        <i class="fas fa-phone"></i>
+                        <div>
+                            <h3>Телефон</h3>
+                            <p>+7 (XXX) XXX-XX-XX</p>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fas fa-envelope"></i>
+                        <div>
+                            <h3>Email</h3>
+                            <p>master@metall.ru</p>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <div>
+                            <h3>Адрес</h3>
+                            <p>г. Ваш город, ул. Мастерская, д. 1</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="contact-form">
+                    <h3>Заказать звонок</h3>
+                    <form id="contactForm">
+                        <input type="text" name="name" placeholder="Ваше имя" required>
+                        <input type="tel" name="phone" placeholder="Ваш телефон" required>
+                        <textarea name="message" placeholder="Сообщение" rows="4"></textarea>
+                        <button type="submit" class="btn btn-primary">Отправить</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Футер -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2024 МеталлМастер. Все права защищены.</p>
+        </div>
+    </footer>
+
+    <!-- Модальное окно для просмотра товара -->
+    <div class="modal" id="productModal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <div class="modal-body">
+                <div class="modal-images">
+                    <img id="modalImage" src="" alt="">
+                    <div class="modal-thumbnails" id="modalThumbnails"></div>
+                </div>
+                <div class="modal-info">
+                    <h2 id="modalTitle"></h2>
+                    <p class="modal-price" id="modalPrice"></p>
+                    <p class="modal-description" id="modalDescription"></p>
+                    <div class="modal-actions">
+                        <button class="btn btn-primary" id="orderBtn">Заказать</button>
+                        <button class="btn btn-secondary" id="editBtn" style="display: none;" onclick="editProduct()">Редактировать</button>
+                        <button class="btn btn-danger" id="deleteBtn" style="display: none;" onclick="deleteProduct()">Удалить</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно для редактирования товара -->
+    <div class="modal" id="editProductModal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <div class="modal-body">
+                <h2>Редактировать товар</h2>
+                <form class="product-form" id="editProductForm">
+                    <input type="hidden" id="editProductId">
+                    
+                    <div class="form-group">
+                        <label for="editProductName">Название товара</label>
+                        <input type="text" id="editProductName" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="editProductCategory">Категория</label>
+                        <select id="editProductCategory" required>
+                            <option value="">Выберите категорию</option>
+                            <option value="doors">Двери</option>
+                            <option value="fences">Заборы</option>
+                            <option value="forged">Ковка</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="editProductPrice">Цена (руб.)</label>
+                        <input type="number" id="editProductPrice" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="editProductDescription">Описание</label>
+                        <textarea id="editProductDescription" rows="4" required></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Текущие фотографии</label>
+                        <div class="current-images" id="currentImages"></div>
+                        <button type="button" class="btn btn-secondary" onclick="openImageManager(currentEditingProduct.id)" style="margin-top: 10px;">
+                            <i class="fas fa-images"></i> Управление изображениями
+                        </button>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="editProductImages">Добавить новые фотографии</label>
+                        <input type="file" id="editProductImages" multiple accept="image/*">
+                        <div class="image-preview" id="editImagePreview"></div>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">Сохранить изменения</button>
+                        <button type="button" class="btn btn-secondary" onclick="closeEditModal()">Отмена</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно для управления изображениями -->
+    <div class="modal" id="imageManagerModal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <div class="modal-body">
+                <h2>Управление изображениями</h2>
+                <div class="image-manager">
+                    <div class="images-grid" id="imagesGrid"></div>
+                    <div class="image-actions">
+                        <button class="btn btn-primary" onclick="addNewImages()">Добавить изображения</button>
+                        <button class="btn btn-secondary" onclick="closeImageManager()">Готово</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="api.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
