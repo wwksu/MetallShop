@@ -23,6 +23,10 @@
     --text-secondary: #bdc3c7;
     --accent-color: #e74c3c;
     --accent-hover: #c0392b;
+    --success-color: #27ae60;
+    --info-color: #3498db;
+    --warning-color: #f39c12;
+    --danger-color: #e74c3c;
     --border-color: #34495e;
     --card-bg: #2c3e50;
     --input-bg: #2c3e50;
@@ -38,6 +42,10 @@
     --text-secondary: #6c757d;
     --accent-color: #dc3545;
     --accent-hover: #c82333;
+    --success-color: #28a745;
+    --info-color: #0d6efd;
+    --warning-color: #fd7e14;
+    --danger-color: #dc3545;
     --border-color: #dee2e6;
     --card-bg: #ffffff;
     --input-bg: #ffffff;
@@ -1876,10 +1884,10 @@ body {
 
   <!-- Модальное окно товара -->
   <div id="productModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:4000; align-items:center; justify-content:center;">
-    <div style="background:#fff; max-width:900px; width:95%; border-radius:8px; padding:20px; position:relative;">
+    <div style="background:var(--bg-secondary); color:var(--text-primary); max-width:900px; width:95%; border-radius:8px; padding:20px; position:relative; box-shadow:0 20px 60px var(--shadow);">
       <button class="close" style="position:absolute; right:12px; top:8px; background:none; border:none; font-size:24px; cursor:pointer">&times;</button>
       <div style="display:flex; gap:20px; flex-wrap:wrap;">
-        <img id="modalImage" alt="" style="width:300px; height:200px; object-fit:cover; background:#f2f2f2; border-radius:6px;" />
+        <img id="modalImage" alt="" style="width:300px; height:200px; object-fit:cover; background:var(--bg-tertiary); border-radius:6px;" />
         <div style="flex:1; min-width:240px;">
           <h3 id="modalTitle" style="margin-top:0"></h3>
           <div id="modalPrice" style="font-weight:600; margin:8px 0"></div>
@@ -1897,7 +1905,7 @@ body {
 
   <!-- Модальное окно редактирования товара -->
   <div id="editProductModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:4001; align-items:center; justify-content:center;">
-    <div style="background:#fff; max-width:900px; width:95%; border-radius:8px; padding:20px; position:relative;">
+    <div style="background:var(--bg-secondary); color:var(--text-primary); max-width:900px; width:95%; border-radius:8px; padding:20px; position:relative; box-shadow:0 20px 60px var(--shadow);">
       <button class="close" style="position:absolute; right:12px; top:8px; background:none; border:none; font-size:24px; cursor:pointer">&times;</button>
       <h3 style="margin-top:0">Редактирование товара</h3>
       <form id="editProductForm">
@@ -2939,7 +2947,7 @@ function showNotification(message, type = 'info') {
         position: fixed;
         top: 20px;
         right: 20px;
-        background: ${type === 'success' ? '#27ae60' : '#3498db'};
+        background: var(${type === 'success' ? '--success-color' : type === 'error' ? '--danger-color' : type === 'warning' ? '--warning-color' : '--info-color'});
         color: white;
         padding: 15px 20px;
         border-radius: 5px;
