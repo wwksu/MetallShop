@@ -1874,6 +1874,67 @@ body {
     <div class="container"><p>&copy; 2024 МеталлМастер. Все права защищены.</p></div>
   </footer>
 
+  <!-- Модальное окно товара -->
+  <div id="productModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:4000; align-items:center; justify-content:center;">
+    <div style="background:#fff; max-width:900px; width:95%; border-radius:8px; padding:20px; position:relative;">
+      <button class="close" style="position:absolute; right:12px; top:8px; background:none; border:none; font-size:24px; cursor:pointer">&times;</button>
+      <div style="display:flex; gap:20px; flex-wrap:wrap;">
+        <img id="modalImage" alt="" style="width:300px; height:200px; object-fit:cover; background:#f2f2f2; border-radius:6px;" />
+        <div style="flex:1; min-width:240px;">
+          <h3 id="modalTitle" style="margin-top:0"></h3>
+          <div id="modalPrice" style="font-weight:600; margin:8px 0"></div>
+          <p id="modalDescription" style="margin:8px 0"></p>
+          <div id="modalThumbnails" style="display:flex; gap:8px; flex-wrap:wrap; margin-top:10px;"></div>
+          <div style="margin-top:16px; display:flex; gap:10px; flex-wrap:wrap;">
+            <button id="orderBtn" class="btn btn-primary">Заказать</button>
+            <button id="editBtn" class="btn btn-secondary" style="display:none;">Редактировать</button>
+            <button id="deleteBtn" class="btn btn-danger" style="display:none;">Удалить</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Модальное окно редактирования товара -->
+  <div id="editProductModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:4001; align-items:center; justify-content:center;">
+    <div style="background:#fff; max-width:900px; width:95%; border-radius:8px; padding:20px; position:relative;">
+      <button class="close" style="position:absolute; right:12px; top:8px; background:none; border:none; font-size:24px; cursor:pointer">&times;</button>
+      <h3 style="margin-top:0">Редактирование товара</h3>
+      <form id="editProductForm">
+        <input type="hidden" id="editProductId" />
+        <div class="form-group">
+          <label for="editProductName">Название</label>
+          <input type="text" id="editProductName" required />
+        </div>
+        <div class="form-group">
+          <label for="editProductCategory">Категория</label>
+          <select id="editProductCategory" required>
+            <option value="doors">Двери</option>
+            <option value="fences">Заборы</option>
+            <option value="forged">Ковка</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="editProductPrice">Цена (руб.)</label>
+          <input type="number" id="editProductPrice" required />
+        </div>
+        <div class="form-group">
+          <label for="editProductDescription">Описание</label>
+          <textarea id="editProductDescription" rows="4" required></textarea>
+        </div>
+        <div class="form-group">
+          <label for="editProductImages">Добавить фото</label>
+          <input type="file" id="editProductImages" accept="image/*" multiple />
+        </div>
+        <div id="currentImages" style="display:flex; gap:10px; flex-wrap:wrap; margin:10px 0;"></div>
+        <div style="display:flex; gap:10px;">
+          <button type="submit" class="btn btn-primary">Сохранить</button>
+          <button type="button" class="btn btn-secondary" onclick="closeEditModal()">Отмена</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <!-- Скрипты -->
   <script>
 // API модуль для синхронизации данных (инлайн)
@@ -2377,7 +2438,7 @@ function openModal(product) {
         modalThumbnails.innerHTML = '';
     }
     
-    modal.style.display = 'block';
+    modal.style.display = 'flex';
     document.body.style.overflow = 'hidden';
 }
 
