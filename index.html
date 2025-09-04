@@ -3263,8 +3263,8 @@ function logout() {
 }
 
 function addSampleUsers() {
-    // Уважает флаг отключения и одноразовый сид
-    if (localStorage.getItem('disableSampleUsers') === '1') return;
+    // Уважает флаг отключения и одноразовый сид, но всегда гарантирует наличие главного админа
+    const disabled = localStorage.getItem('disableSampleUsers') === '1';
     const alreadySeeded = localStorage.getItem('sampleUsersSeeded') === '1';
 
     const sampleUsers = [
@@ -3282,6 +3282,11 @@ function addSampleUsers() {
     const filteredSamples = sampleUsers.filter(u => !deletedSampleEmails.includes(u.email));
 
     const hasFather = users.some(u => u.email === 'father@metall.ru');
+
+    // Если сид отключён и админ уже есть — ничего не делаем
+    if (disabled && hasFather) {
+        return;
+    }
 
     if (!alreadySeeded || !hasFather) {
         const existingEmails = users.map(u => u.email);
