@@ -1926,6 +1926,27 @@ let currentFilter = 'all';
 let currentEditingProduct = null;
 let isOnline = navigator.onLine;
 
+// Автосинхронизация с сервером (дебаунс)
+let syncTimer = null;
+function scheduleAutoSync() {
+    if (!isOnline || !window.api) return;
+    if (syncTimer) clearTimeout(syncTimer);
+    syncTimer = setTimeout(() => {
+        try {
+            window.api.syncAllData({
+                products: products,
+                users: users,
+                contacts: JSON.parse(localStorage.getItem('contacts')) || [],
+                settings: JSON.parse(localStorage.getItem('siteSettings')) || {}
+            }).then(() => {
+                console.log('Автосинхронизация: успех');
+            }).catch(err => console.error('Автосинхронизация: ошибка', err));
+        } catch (e) {
+            console.error('Автосинхронизация: исключение', e);
+        }
+    }, 800); // дебаунс 800 мс
+}
+
 // Инициализация при загрузке страницы
 document.addEventListener('DOMContentLoaded', function() {
     initializeApp();
@@ -2177,6 +2198,7 @@ async function saveProduct(product) {
             // Сохраняем в localStorage
             const productsJson = JSON.stringify(products);
             localStorage.setItem('products', productsJson);
+            scheduleAutoSync();
             
             // Синхронизируем с сервером
             await syncDataToServer();
@@ -2237,6 +2259,7 @@ function setupContactForm() {
         let contacts = JSON.parse(localStorage.getItem('contacts')) || [];
         contacts.push(contactData);
         localStorage.setItem('contacts', JSON.stringify(contacts));
+        scheduleAutoSync();
         
         console.log('Контактная заявка сохранена:', contactData);
         console.log('Все заявки:', contacts);
@@ -2961,6 +2984,7 @@ function cleanupOldData() {
         if (contacts.length > 50) {
             const recentContacts = contacts.slice(-50);
             localStorage.setItem('contacts', JSON.stringify(recentContacts));
+            scheduleAutoSync();
             console.log('Удалены старые контакты');
         }
         
@@ -2969,6 +2993,7 @@ function cleanupOldData() {
         if (products.length > 100) {
             const recentProducts = products.slice(-100);
             localStorage.setItem('products', JSON.stringify(recentProducts));
+            scheduleAutoSync();
             console.log('Удалены старые товары');
         }
     }
@@ -3060,6 +3085,10 @@ function setupAuth() {
         
         users.push(newUser);
         localStorage.setItem('users', JSON.stringify(users));
+        scheduleAutoSync();
+        scheduleAutoSync();
+        scheduleAutoSync();
+        scheduleAutoSync();
         
         // Синхронизируем с сервером
         await syncDataToServer();
@@ -3159,6 +3188,7 @@ function addSampleUsers() {
     if (newUsers.length > 0) {
         users = [...users, ...newUsers];
         localStorage.setItem('users', JSON.stringify(users));
+        scheduleAutoSync();
         console.log('Добавлены тестовые пользователи:', newUsers);
     }
 }
@@ -3207,6 +3237,7 @@ function editProfile() {
         if (userIndex !== -1) {
             users[userIndex] = currentUser;
             localStorage.setItem('users', JSON.stringify(users));
+            scheduleAutoSync();
             localStorage.setItem('currentUser', JSON.stringify(currentUser));
         }
         
@@ -3269,6 +3300,7 @@ function setupAdminPanel() {
         
         // Сохраняем в localStorage
         localStorage.setItem('siteSettings', JSON.stringify(settings));
+        scheduleAutoSync();
         
         // Обновляем отображение контактной информации на сайте
         updateContactDisplay();
@@ -3519,6 +3551,7 @@ function deleteProduct(productId) {
     if (confirm('Вы уверены, что хотите удалить этот товар?')) {
         products = products.filter(p => p.id !== productId);
         localStorage.setItem('products', JSON.stringify(products));
+        scheduleAutoSync();
         loadProducts();
         loadAdminProducts();
         showNotification('Товар удален', 'success');
@@ -3530,6 +3563,7 @@ function removeProductImage(productId, imageIndex) {
     if (product && product.images) {
         product.images.splice(imageIndex, 1);
         localStorage.setItem('products', JSON.stringify(products));
+        scheduleAutoSync();
         editProduct(productId); // Обновляем форму
         showNotification('Изображение удалено', 'success');
     }
@@ -3618,6 +3652,7 @@ function saveEditedProduct() {
             // Сохраняем изменения
             const productsJson = JSON.stringify(products);
             localStorage.setItem('products', productsJson);
+            scheduleAutoSync();
             
             console.log('Товар сохранен в localStorage');
             console.log('Размер localStorage:', checkLocalStorageSize(), 'символов');
@@ -3640,9 +3675,11 @@ function saveEditedProduct() {
                 console.log('localStorage переполнен, удаляем старые товары...');
                 products = products.slice(-50); // Оставляем только последние 50 товаров
                 localStorage.setItem('products', JSON.stringify(products));
+                scheduleAutoSync();
                 
                 // Пробуем сохранить снова
                 localStorage.setItem('products', JSON.stringify(products));
+                scheduleAutoSync();
                 
                 // Обновляем отображение
                 loadProducts();
@@ -3665,6 +3702,7 @@ function updateOrderStatus(orderIndex, status) {
     if (contacts[orderIndex]) {
         contacts[orderIndex].status = status;
         localStorage.setItem('contacts', JSON.stringify(contacts));
+        scheduleAutoSync();
         loadOrders();
         showNotification('Статус заказа обновлен', 'success');
     }
@@ -3692,6 +3730,7 @@ function editUser(userId) {
         }
         
         localStorage.setItem('users', JSON.stringify(users));
+        scheduleAutoSync();
         
         // Если редактируем текущего пользователя, обновляем его данные
         if (userId === currentUser.id) {
@@ -3730,6 +3769,7 @@ function deleteUser(userId) {
     if (confirm('Вы уверены, что хотите удалить этого пользователя?')) {
         users = users.filter(u => u.id !== userId);
         localStorage.setItem('users', JSON.stringify(users));
+        scheduleAutoSync();
         loadUsers();
         showNotification('Пользователь удален', 'success');
     }
@@ -3886,6 +3926,7 @@ function clearAllProducts() {
     if (confirm('Вы уверены, что хотите удалить ВСЕ товары? Это действие нельзя отменить!')) {
         products = [];
         localStorage.setItem('products', JSON.stringify(products));
+        scheduleAutoSync();
         
         loadProducts();
         loadAdminProducts();
@@ -3918,6 +3959,7 @@ function removeDefaultProducts() {
         if (filteredProducts.length !== currentProducts.length) {
             products = filteredProducts;
             localStorage.setItem('products', JSON.stringify(products));
+            scheduleAutoSync();
             loadProducts();
             loadAdminProducts();
             showNotification(`Удалено ${currentProducts.length - filteredProducts.length} товаров по умолчанию`, 'success');
