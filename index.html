@@ -1991,6 +1991,15 @@ async function loadDataFromServer() {
             
             products = serverData.products || [];
             users = serverData.users || [];
+            // Сохраняем и применяем контакты/настройки из сервера
+            const serverContacts = serverData.contacts || [];
+            const serverSettings = serverData.settings || {};
+            try {
+                localStorage.setItem('contacts', JSON.stringify(serverContacts));
+                localStorage.setItem('siteSettings', JSON.stringify(serverSettings));
+            } catch (e) {
+                console.warn('Не удалось сохранить contacts/settings из сервера в localStorage', e);
+            }
             
             // Загружаем текущего пользователя из localStorage
             const storedUser = localStorage.getItem('currentUser');
@@ -2013,6 +2022,8 @@ async function loadDataFromLocalStorage() {
     const storedProducts = localStorage.getItem('products');
     const storedUsers = localStorage.getItem('users');
     const storedUser = localStorage.getItem('currentUser');
+    const storedContacts = localStorage.getItem('contacts');
+    const storedSettings = localStorage.getItem('siteSettings');
     
     if (storedProducts) {
         products = JSON.parse(storedProducts);
@@ -2022,6 +2033,13 @@ async function loadDataFromLocalStorage() {
     }
     if (storedUser) {
         currentUser = JSON.parse(storedUser);
+    }
+    // Если есть сохранённые контакты/настройки — убеждаемся, что они существуют в localStorage
+    if (storedContacts) {
+        try { localStorage.setItem('contacts', storedContacts); } catch (e) {}
+    }
+    if (storedSettings) {
+        try { localStorage.setItem('siteSettings', storedSettings); } catch (e) {}
     }
 }
 
