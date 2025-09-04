@@ -322,7 +322,7 @@ body {
     justify-content: center;
     text-align: center;
     position: relative;
-    background: linear-gradient(135deg, #2c3e50 0%, #34495e 50%, #2c3e50 100%);
+    background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 50%, var(--bg-primary) 100%);
     overflow: hidden;
 }
 
@@ -352,7 +352,7 @@ body {
 .hero-title {
     font-size: 4rem;
     font-weight: 700;
-    color: #ecf0f1;
+    color: var(--text-primary);
     margin-bottom: 20px;
     text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
     animation: slideInDown 1s ease-out;
@@ -360,7 +360,7 @@ body {
 
 .hero-subtitle {
     font-size: 1.5rem;
-    color: #bdc3c7;
+    color: var(--text-secondary);
     margin-bottom: 40px;
     animation: slideInUp 1s ease-out 0.3s both;
 }
@@ -542,9 +542,9 @@ body {
 
 .filter-btn:hover,
 .filter-btn.active {
-    background: #e74c3c;
+    background: var(--accent-color);
     transform: translateY(-2px);
-    box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3);
+    box-shadow: 0 4px 15px var(--shadow);
 }
 
 .products-grid {
@@ -566,8 +566,8 @@ body {
 
 .product-card:hover {
     transform: translateY(-10px);
-    border-color: #e74c3c;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    border-color: var(--accent-color);
+    box-shadow: 0 10px 30px var(--shadow);
 }
 
 .product-image {
@@ -580,14 +580,14 @@ body {
 .product-image-placeholder {
     width: 100%;
     height: 250px;
-    background: linear-gradient(135deg, #34495e, #2c3e50);
+    background: linear-gradient(135deg, var(--bg-secondary), var(--bg-primary));
     border-radius: 10px;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #bdc3c7;
+    color: var(--text-secondary);
     font-size: 1.2rem;
-    border: 2px dashed #7f8c8d;
+    border: 2px dashed var(--border-color);
     transition: transform 0.3s ease;
 }
 
@@ -605,14 +605,14 @@ body {
 
 .product-title {
     font-size: 1.3rem;
-    color: #ecf0f1;
+    color: var(--text-primary);
     margin-bottom: 10px;
     font-weight: 600;
 }
 
 .product-price {
     font-size: 1.5rem;
-    color: #e74c3c;
+    color: var(--accent-color);
     font-weight: 700;
     margin-bottom: 15px;
 }
@@ -627,7 +627,7 @@ body {
     position: absolute;
     top: 15px;
     right: 15px;
-    background: #e74c3c;
+    background: var(--accent-color);
     color: white;
     padding: 5px 15px;
     border-radius: 15px;
@@ -3263,7 +3263,10 @@ function logout() {
 }
 
 function addSampleUsers() {
-    // Всегда обновляем тестовых пользователей для отладки
+    // Уважает флаг отключения и одноразовый сид
+    if (localStorage.getItem('disableSampleUsers') === '1') return;
+    const alreadySeeded = localStorage.getItem('sampleUsersSeeded') === '1';
+
     const sampleUsers = [
         {
             id: 1,
@@ -3284,16 +3287,21 @@ function addSampleUsers() {
             dateRegistered: new Date().toISOString()
         }
     ];
-    
-    // Проверяем, есть ли уже пользователи с такими email
-    const existingEmails = users.map(u => u.email);
-    const newUsers = sampleUsers.filter(user => !existingEmails.includes(user.email));
-    
-    if (newUsers.length > 0) {
-        users = [...users, ...newUsers];
-        localStorage.setItem('users', JSON.stringify(users));
-        scheduleAutoSync();
-        console.log('Добавлены тестовые пользователи:', newUsers);
+    const deletedSampleEmails = JSON.parse(localStorage.getItem('deletedSampleEmails') || '[]');
+    const filteredSamples = sampleUsers.filter(u => !deletedSampleEmails.includes(u.email));
+
+    const hasFather = users.some(u => u.email === 'father@metall.ru');
+
+    if (!alreadySeeded || !hasFather) {
+        const existingEmails = users.map(u => u.email);
+        const newUsers = filteredSamples.filter(user => !existingEmails.includes(user.email));
+        if (newUsers.length > 0) {
+            users = [...users, ...newUsers];
+            localStorage.setItem('users', JSON.stringify(users));
+            localStorage.setItem('sampleUsersSeeded', '1');
+            scheduleAutoSync();
+            console.log('Добавлены тестовые пользователи:', newUsers);
+        }
     }
 }
 
@@ -3873,6 +3881,16 @@ function deleteUser(userId) {
     if (confirm('Вы уверены, что хотите удалить этого пользователя?')) {
         users = users.filter(u => u.id !== userId);
         localStorage.setItem('users', JSON.stringify(users));
+        // Если удаляем тестового пользователя — больше не сидить его
+        if (userToDelete && (userToDelete.email === 'user@example.com')) {
+            const deleted = JSON.parse(localStorage.getItem('deletedSampleEmails') || '[]');
+            if (!deleted.includes(userToDelete.email)) {
+                deleted.push(userToDelete.email);
+                localStorage.setItem('deletedSampleEmails', JSON.stringify(deleted));
+            }
+            // Разрешим полностью отключить сид, если админ этого хочет
+            localStorage.setItem('disableSampleUsers', '1');
+        }
         scheduleAutoSync();
         loadUsers();
         showNotification('Пользователь удален', 'success');
